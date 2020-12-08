@@ -1,5 +1,4 @@
 import itertools
-
 def data():
     def parse_op(op):
         return op.split(" ")[0], int(op.split(" ")[1])
@@ -37,9 +36,9 @@ class GameConsole:
 
 instructions = data()
 
-def indexes_seen_so_far_and_state(indexes_so_far, current_state):
+def indexes_seen_so_far_and_state(indexes_so_far_and_previous_state, current_state):
     _, current_index = current_state
-    return indexes_so_far[0] + [current_index], current_state
+    return indexes_so_far_and_previous_state[0] + [current_index], current_state
 
 def execute_while_error_or_end(instructions):
     execution = GameConsole().execute_instructions(instructions)
@@ -49,16 +48,15 @@ def execute_while_error_or_end(instructions):
 print(execute_while_error_or_end(instructions)[0])
 
 for i in range(len(instructions)):
+    def has_ended_properly(state):
+        return state[1] == len(instructions)
+
     changes = {
         "nop": "jmp",
         "jmp": "nop"
     }
 
-    def has_ended_properly(state):
-        return state[1] == len(instructions)
-
     operation, operand = instructions[i]
-
     if instructions[i][0] in changes:
         new_instructions = instructions[0:i] + [(changes[operation], operand)] + instructions[i+1:]
         if has_ended_properly(execute_while_error_or_end(new_instructions)):
